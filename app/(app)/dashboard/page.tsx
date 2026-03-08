@@ -1,16 +1,20 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
-import DashboardClient from "./DashboardClient";
+"use client";
 
-export default async function DashboardPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+import { authClient } from "@/lib/auth-client";
 
-  if (!session) {
-    redirect("/sign-in");
-  }
+export default function DashboardPage() {
+  const { data: session, isPending } = authClient.useSession();
 
-  return <DashboardClient />;
+  if (isPending) return <p className="text-center mt-8 text-white">Loading...</p>;
+  if (!session?.user) return <p className="text-center mt-8 text-white">Redirecting...</p>;
+
+  const { user } = session;
+
+  return (
+    <main className="max-w-md h-screen flex items-center justify-center flex-col mx-auto p-6 space-y-4 text-white">
+      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <p>Welcome, {user.name || "User"}!</p>
+      <p>Email: {user.email}</p>
+    </main>
+  );
 }
