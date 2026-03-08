@@ -2,28 +2,28 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "@/lib/auth-client";
+import { signIn } from "@/lib/actions/auth-actions";
 
-export default function SignInPage() {
+export default function SignInForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setIsLoading(true);
     setError(null);
 
-    const formData = new FormData(e.currentTarget);
+    const res = await signIn(email, password);
 
-    const res = await signIn.email({
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
-    });
-
-    if (res.error) {
-      setError(res.error.message || "Something went wrong.");
-    } else {
-      router.push("/dashboard");
+    if (!res.user) {
+      setError("Invalid email or password.");
+      setIsLoading(false);
+      return;
     }
+    router.push("/dashboard");
   }
 
   return (
@@ -37,6 +37,8 @@ export default function SignInPage() {
           type="email"
           placeholder="Email"
           required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="w-full rounded-md bg-neutral-900 border border-neutral-700 px-3 py-2"
         />{" "}
         <input
@@ -44,6 +46,8 @@ export default function SignInPage() {
           type="password"
           placeholder="Password"
           required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           className="w-full rounded-md bg-neutral-900 border border-neutral-700 px-3 py-2"
         />{" "}
         <button
@@ -51,7 +55,7 @@ export default function SignInPage() {
           className="w-full bg-white text-black font-medium rounded-md px-4 py-2 hover:bg-gray-200"
         >
           {" "}
-          // [!code ++] Sign In
+          Log in
         </button>{" "}
       </form>{" "}
     </main>

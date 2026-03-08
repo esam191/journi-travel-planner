@@ -2,27 +2,27 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signUp } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
+import { signUp } from "@/lib/actions/auth-actions";
 
-export default function SignUpPage() {
+export default function SignUpForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setIsLoading(true);
     setError(null);
 
-    const formData = new FormData(e.currentTarget);
-
-    const res = await signUp.email({
-      name: formData.get("name") as string,
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
-    });
-
-    if (res.error) {
-      setError(res.error.message || "Something went wrong.");
+    const res = await signUp(email, password, name);
+    if (!res.user) {
+      setError("Failed to create account");
     } else {
+      setIsLoading(false);
       router.push("/dashboard");
     }
   }
@@ -37,6 +37,8 @@ export default function SignUpPage() {
           name="name"
           placeholder="Full Name"
           required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           className="w-full rounded-md bg-neutral-900 border border-neutral-700 px-3 py-2"
         />{" "}
         <input
@@ -44,6 +46,8 @@ export default function SignUpPage() {
           type="email"
           placeholder="Email"
           required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="w-full rounded-md bg-neutral-900 border border-neutral-700 px-3 py-2"
         />{" "}
         <input
@@ -51,6 +55,8 @@ export default function SignUpPage() {
           type="password"
           placeholder="Password"
           required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           minLength={8}
           className="w-full rounded-md bg-neutral-900 border border-neutral-700 px-3 py-2"
         />{" "}
