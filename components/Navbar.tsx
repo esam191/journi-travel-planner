@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut } from "@/lib/actions/auth-actions";
+import { Button } from "./ui/button";
 
 type Session = typeof auth.$Infer.Session;
 
@@ -54,12 +55,9 @@ export default function Navbar({ session }: { session: Session | null }) {
                 >
                   Log In
                 </Link>
-                <Link
-                  href="/sign-up"
-                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  Try for free
-                </Link>
+                <Button asChild size="lg">
+                  <Link href="/sign-up">Try for free</Link>
+                </Button>
               </>
             )}
           </nav>
