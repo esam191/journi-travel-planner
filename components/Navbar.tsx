@@ -13,8 +13,8 @@ export default function Navbar({ session }: { session: Session | null }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const isAppPage =
-    pathname === "/dashboard" || pathname.startsWith("/trips");
+  const isDashboardPage = pathname === "/dashboard";
+  const isAppPage = pathname === "/dashboard" || pathname.startsWith("/trips");
 
   const handleSignOut = async () => {
     await signOut();
@@ -37,7 +37,7 @@ export default function Navbar({ session }: { session: Session | null }) {
         <nav className="flex items-center gap-3">
           {session ? (
             <>
-              {isAppPage ? (
+              {isDashboardPage ? (
                 <Button asChild>
                   <Link href="/trips/add" className="inline-flex items-center gap-2">
                     <Plus className="h-4 w-4" />
@@ -61,7 +61,7 @@ export default function Navbar({ session }: { session: Session | null }) {
               </Button>
 
               <Button asChild>
-                <Link href="/sign-up">Try for free</Link>
+                <Link href="/sign-up">Sign Up</Link>
               </Button>
             </>
           )}

@@ -14,7 +14,7 @@ export default function Home() {
         </h1>
         <p className="text-xl text-slate-600 max-w-md">
           Organize itineraries, manage travel documents, and discover amazing
-          destinations. It's the simplest way to plan your next trip.
+          destinations. It&apos;s the simplest way to plan your next trip.
         </p>
         <div className="flex gap-4 pt-4">
           <Button
