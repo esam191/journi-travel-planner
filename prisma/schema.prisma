@@ -17,6 +17,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]
+  trips         Trip[]
 
   @@map("user")
 }
@@ -66,4 +67,51 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Trip {
+  id             String          @id @default(cuid())
+  title          String
+  description    String
+  imageUrl       String?
+  startDate      DateTime
+  endDate        DateTime
+  userId         String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itineraryitems ItineraryItem[]
+  documents      Document[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([userId])
+}
+
+model ItineraryItem {
+  id        String   @id @default(cuid())
+  itemTitle String
+  lat       Float
+  lng       Float
+  tripId    String
+  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([tripId, order])
+}
+
+model Document {
+  id     String @id @default(cuid())
+  tripId String
+  trip   Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  fileName   String
+  storageKey String   @unique
+  url        String
+  mimeType   String?
+  fileSize   Int?
+  uploadedBy String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([tripId])
 }
