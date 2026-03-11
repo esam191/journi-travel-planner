@@ -7,14 +7,14 @@ import { ArrowRight, Calendar, MapPin, FileText } from "lucide-react";
 export default function Home() {
   return (
     <div className="max-w-6xl mx-auto px-6 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 items-center">
-      {/* -- left side */}
+      {/* left side */}
       <div className="flex flex-col space-y-8 w-full max-w-lg">
         <h1 className="text-7xl lg:text-6xl font-bold">
           Plan your dream <br /> trip with ease
         </h1>
         <p className="text-xl text-slate-600 max-w-md">
           Organize itineraries, manage travel documents, and discover amazing
-          destinations. It's the simplest way to plan your next trip.
+          destinations. It&apos;s the simplest way to plan your next trip.
         </p>
         <div className="flex gap-4 pt-4">
           <Button
@@ -36,7 +36,7 @@ export default function Home() {
           </Button>
         </div>
       </div>
-      {/* -- right side */}
+      {/* right side */}
       <div className="w-full max-w-md border border-slate-200 rounded-xl shadow-sm">
         <div className="bg-black p-6 text-white">
           <div className="flex justify-between">
