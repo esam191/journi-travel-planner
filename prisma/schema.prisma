@@ -96,7 +96,7 @@ model ItineraryItem {
   order     Int      @default(0)
   createdAt DateTime @default(now())
 
-  @@index([tripId, order])
+  @@unique([tripId, order])
 }
 
 model Document {

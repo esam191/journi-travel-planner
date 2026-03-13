@@ -1,7 +1,17 @@
+import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 import { GooglePlacesAutocompleteResponse } from "@/types/trip";
 
 export async function GET(request: Request) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const input = searchParams.get("input")?.trim() ?? "";
 
@@ -13,7 +23,7 @@ export async function GET(request: Request) {
 
   if (!apiKey) {
     return NextResponse.json(
-      { error: "Missing GOOGLE_MAPS_API_KEY." },
+      { error: "Server configuration error. Please try again later." },
       { status: 500 }
     );
   }
@@ -34,12 +44,8 @@ export async function GET(request: Request) {
   );
 
   if (!googleResponse.ok) {
-    const errorText = await googleResponse.text();
     return NextResponse.json(
-      {
-        error: "Google Places autocomplete failed.",
-        details: errorText,
-      },
+      { error: "Google Places autocomplete failed." },
       { status: googleResponse.status }
     );
   }

@@ -2,13 +2,16 @@
 
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import { GooglePlaceDetailsResponse } from "@/types/trip";
+import { fetchPlaceDetails } from "@/lib/google-places";
+import { Prisma } from "@/lib/generated/prisma/client";
 import prisma from "../prisma";
 
 type CreateItineraryItemInput = {
   tripId: string;
   placeId: string;
 };
+
+const MAX_ORDER_RETRY_ATTEMPTS = 3;
 
 export async function createItineraryItem(input: CreateItineraryItemInput) {
   const session = await auth.api.getSession({
@@ -39,59 +42,44 @@ export async function createItineraryItem(input: CreateItineraryItemInput) {
     throw new Error("Trip not found.");
   }
 
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+  const { itemTitle, lat, lng } = await fetchPlaceDetails(placeId);
 
-  if (!apiKey) {
-    throw new Error("Missing GOOGLE_MAPS_API_KEY.");
-  }
-
-  const googleResponse = await fetch(
-    `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`,
-    {
-      headers: {
-        "X-Goog-Api-Key": apiKey,
-        "X-Goog-FieldMask": "displayName,location",
+  for (let attempt = 1; attempt <= MAX_ORDER_RETRY_ATTEMPTS; attempt += 1) {
+    const lastItem = await prisma.itineraryItem.findFirst({
+      where: {
+        tripId,
       },
-      cache: "no-store",
+      orderBy: {
+        order: "desc",
+      },
+      select: {
+        order: true,
+      },
+    });
+
+    const nextOrder = (lastItem?.order ?? -1) + 1;
+
+    try {
+      await prisma.itineraryItem.create({
+        data: {
+          tripId,
+          itemTitle,
+          lat,
+          lng,
+          order: nextOrder,
+        },
+      });
+      return;
+    } catch (error) {
+      const isUniqueConflict =
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002";
+
+      if (!isUniqueConflict || attempt === MAX_ORDER_RETRY_ATTEMPTS) {
+        throw error;
+      }
     }
-  );
-
-  if (!googleResponse.ok) {
-    throw new Error("Failed to fetch place details.");
   }
-
-  const place = (await googleResponse.json()) as GooglePlaceDetailsResponse;
-  const itemTitle = place.displayName?.text;
-  const lat = place.location?.latitude;
-  const lng = place.location?.longitude;
-
-  if (typeof lat !== "number" || typeof lng !== "number" || !itemTitle) {
-    throw new Error("Incomplete place details returned by Google.");
-  }
-
-  const lastItem = await prisma.itineraryItem.findFirst({
-    where: {
-      tripId,
-    },
-    orderBy: {
-      order: "desc",
-    },
-    select: {
-      order: true,
-    },
-  });
-
-  const nextOrder = (lastItem?.order ?? -1) + 1;
-
-  await prisma.itineraryItem.create({
-    data: {
-      tripId,
-      itemTitle,
-      lat,
-      lng,
-      order: nextOrder,
-    },
-  });
 }
 
 export async function deleteItineraryItem(itemId: string) {
