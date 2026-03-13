@@ -11,11 +11,12 @@ import DocumentsTab from "./DocumentsTab";
 import { type DocumentData, ItineraryItemData } from "../types/trip";
 
 type TripDetailsTabsProps = {
+  tripId: string;
   itineraryitems: ItineraryItemData[];
   documents: DocumentData[];
 };
 
-export default function TripDetailsTabs({ itineraryitems, documents, }: TripDetailsTabsProps) {
+export default function TripDetailsTabs({ tripId, itineraryitems, documents }: TripDetailsTabsProps) {
   return (
     <Tabs defaultValue="itinerary" className="space-y-6">
       <TabsList className="grid w-full max-w-sm grid-cols-2">
@@ -24,7 +25,7 @@ export default function TripDetailsTabs({ itineraryitems, documents, }: TripDeta
       </TabsList>
 
       <TabsContent value="itinerary">
-        <ItineraryTab items={itineraryitems} />
+        <ItineraryTab items={itineraryitems} tripId={tripId} />
       </TabsContent>
 
       <TabsContent value="documents">

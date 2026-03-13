@@ -1,0 +1,69 @@
+import { NextResponse } from "next/server";
+import { GooglePlacesAutocompleteResponse } from "@/types/trip";
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const input = searchParams.get("input")?.trim() ?? "";
+
+  if (!input) {
+    return NextResponse.json({ suggestions: [] });
+  }
+
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+
+  if (!apiKey) {
+    return NextResponse.json(
+      { error: "Missing GOOGLE_MAPS_API_KEY." },
+      { status: 500 }
+    );
+  }
+
+  const googleResponse = await fetch(
+    "https://places.googleapis.com/v1/places:autocomplete",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+      },
+      body: JSON.stringify({
+        input,
+      }),
+      cache: "no-store",
+    }
+  );
+
+  if (!googleResponse.ok) {
+    const errorText = await googleResponse.text();
+    return NextResponse.json(
+      {
+        error: "Google Places autocomplete failed.",
+        details: errorText,
+      },
+      { status: googleResponse.status }
+    );
+  }
+
+  const data = (await googleResponse.json()) as GooglePlacesAutocompleteResponse;
+
+  const suggestions = (data.suggestions ?? [])
+    .map((item) => {
+      const prediction = item.placePrediction;
+      const placeId = prediction?.placeId;
+      const description = prediction?.text?.text;
+
+      if (!placeId || !description) {
+        return null;
+      }
+
+      return {
+        placeId,
+        description,
+        mainText: prediction?.structuredFormat?.mainText?.text ?? description,
+        secondaryText: prediction?.structuredFormat?.secondaryText?.text ?? "",
+      };
+    })
+    .filter(Boolean);
+
+  return NextResponse.json({ suggestions });
+}

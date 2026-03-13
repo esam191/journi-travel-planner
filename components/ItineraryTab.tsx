@@ -1,28 +1,39 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { createItineraryItem } from "@/lib/actions/trip-actions";
 import { ItineraryItemData } from "@/types/trip";
-import { GripVertical, MapPin, Plus } from "lucide-react";
+import { GripVertical } from "lucide-react";
+import { useRouter } from "next/navigation";
+import AddItemDialog from "./AddItemDialog";
 
 type ItineraryTabProps = {
+  tripId: string;
   items: ItineraryItemData[];
 };
 
-export default function ItineraryTab({ items }: ItineraryTabProps) {
+export default function ItineraryTab({ tripId, items }: ItineraryTabProps) {
+  const router = useRouter();
+
+  const handleAddItem = async (placeId: string) => {
+    await createItineraryItem({
+      tripId, placeId,
+    });
+
+    router.refresh();
+  };
+
   return (
     <Card className="overflow-hidden py-0">
       <CardHeader className="flex flex-row items-center justify-between border-b px-6 py-5">
         <CardTitle>Itinerary</CardTitle>
-
-        <Button disabled>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Item
-        </Button>
+        <AddItemDialog onSubmit={handleAddItem} />
       </CardHeader>
 
       <CardContent className="space-y-4 p-6">
@@ -37,18 +48,10 @@ export default function ItineraryTab({ items }: ItineraryTabProps) {
                 <div className="pt-1 text-muted-foreground">
                   <GripVertical className="h-5 w-5" />
                 </div>
-
                 <div className="min-w-0 flex-1 space-y-3">
                   <div className="flex flex-wrap items-center gap-3">
                     <h3 className="text-lg font-semibold">{item.itemTitle}</h3>
                     <Badge variant="secondary">Stop {index + 1}</Badge>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    <span>
-                      Coordinates: {item.lat}, {item.lng}
-                    </span>
                   </div>
                 </div>
               </CardContent>

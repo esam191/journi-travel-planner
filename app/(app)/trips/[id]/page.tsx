@@ -163,6 +163,7 @@ export default async function TripDetailsPage({ params }: TripDetailsPageProps) 
         </section>
 
         <TripDetailsTabs
+          tripId={trip.id}
           itineraryitems={trip.itineraryitems}
           documents={trip.documents}
         />
