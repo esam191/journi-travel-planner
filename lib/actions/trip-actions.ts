@@ -1,8 +1,8 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import prisma from "../prisma";
 import { headers } from "next/headers";
+import prisma from "../prisma";
 
 export async function createTrip(formData: FormData) {
   const session = await auth.api.getSession({
