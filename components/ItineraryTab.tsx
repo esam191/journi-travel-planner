@@ -1,15 +1,19 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { createItineraryItem } from "@/lib/actions/trip-actions";
+import {
+  createItineraryItem,
+  deleteItineraryItem,
+} from "@/lib/actions/itinerary-actions";
 import { ItineraryItemData } from "@/types/trip";
-import { GripVertical } from "lucide-react";
+import { GripVertical, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import AddItemDialog from "./AddItemDialog";
 
@@ -25,7 +29,15 @@ export default function ItineraryTab({ tripId, items }: ItineraryTabProps) {
     await createItineraryItem({
       tripId, placeId,
     });
+    router.refresh();
+  };
 
+  const handleDeleteItem = async (itemId: string) => {
+    const confirmed = window.confirm(
+      "Delete this itinerary item?"
+    );
+    if (!confirmed) return;
+    await deleteItineraryItem(itemId);
     router.refresh();
   };
 
@@ -54,6 +66,15 @@ export default function ItineraryTab({ tripId, items }: ItineraryTabProps) {
                     <Badge variant="secondary">Stop {index + 1}</Badge>
                   </div>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-destructive hover:text-destructive"
+                  aria-label={`Delete ${item.itemTitle}`}
+                  onClick={() => { handleDeleteItem(item.id) }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </CardContent>
             </Card>
           ))

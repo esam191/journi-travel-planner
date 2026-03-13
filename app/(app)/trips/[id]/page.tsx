@@ -27,7 +27,6 @@ type TripDetailsPageProps = {
 };
 
 export default async function TripDetailsPage({ params }: TripDetailsPageProps) {
-
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -62,6 +61,7 @@ export default async function TripDetailsPage({ params }: TripDetailsPageProps) 
   }
 
   const durationDays = getDurationInDays(trip.startDate, trip.endDate);
+  const mapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
 
   return (
     <main className="min-h-screen bg-background px-4 py-8 md:px-6">
@@ -163,6 +163,7 @@ export default async function TripDetailsPage({ params }: TripDetailsPageProps) 
         </section>
 
         <TripDetailsTabs
+          mapsApiKey={mapsApiKey}
           tripId={trip.id}
           itineraryitems={trip.itineraryitems}
           documents={trip.documents}
