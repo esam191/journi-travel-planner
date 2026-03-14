@@ -5,12 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ArrowLeft,
   CalendarDays,
@@ -20,13 +15,21 @@ import {
   Trash2,
 } from "lucide-react";
 import TripDetailsTabs from "@/components/TripDetailsTabs";
-import { formatDateRange, getDurationInDays, getTripLocationLabel } from "@/lib/utils";
+import {
+  formatDateRange,
+  getDurationInDays,
+  getTripLocationLabel,
+} from "@/lib/utils";
+import { deleteTrip } from "@/lib/actions/trip-actions";
+import DeleteTripDialog from "@/components/DeleteTripDialog";
 
 type TripDetailsPageProps = {
   params: Promise<{ id: string }>;
 };
 
-export default async function TripDetailsPage({ params }: TripDetailsPageProps) {
+export default async function TripDetailsPage({
+  params,
+}: TripDetailsPageProps) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -75,7 +78,9 @@ export default async function TripDetailsPage({ params }: TripDetailsPageProps) 
             </Button>
 
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tight">{trip.title}</h1>
+              <h1 className="text-3xl font-bold tracking-tight">
+                {trip.title}
+              </h1>
 
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
@@ -90,11 +95,7 @@ export default async function TripDetailsPage({ params }: TripDetailsPageProps) 
               </div>
             </div>
           </div>
-
-          <Button variant="destructive" disabled>
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete Trip
-          </Button>
+          <DeleteTripDialog tripId={trip.id} />
         </div>
 
         <Card className="overflow-hidden py-0">
@@ -144,7 +145,9 @@ export default async function TripDetailsPage({ params }: TripDetailsPageProps) 
             </CardHeader>
 
             <CardContent>
-              <div className="text-4xl font-bold">{trip.itineraryitems.length}</div>
+              <div className="text-4xl font-bold">
+                {trip.itineraryitems.length}
+              </div>
               <p className="text-sm text-muted-foreground">Items</p>
             </CardContent>
           </Card>
