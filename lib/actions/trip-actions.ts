@@ -37,3 +37,37 @@ export async function createTrip(formData: FormData) {
     },
   });
 }
+
+export async function deleteTrip(tripId: string){
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session || !session.user?.id) {
+    throw new Error("You must be signed in to delete a trip.");
+  }
+
+  if (!tripId) {
+    throw new Error("Missing trip ID.");
+  }
+
+  const trip = await prisma.trip.findFirst({
+    where: {
+      id: tripId,
+      userId: session.user.id, 
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!trip) {
+    throw new Error("Trip not found.");
+  }
+  
+  await prisma.trip.delete({
+    where: {
+      id: trip.id,
+    },
+  });
+}
