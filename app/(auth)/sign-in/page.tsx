@@ -66,7 +66,11 @@ export default function SignInPage() {
               <div>
                 <CardTitle className="text-lg text-black">Log in and get tripping!</CardTitle>
               </div>
-              <Plane className="w-10 h-10 text-black" />
+
+              <Link href="/">
+                <Plane className="w-10 h-10 text-black cursor-pointer hover:scale-110 transition" />
+              </Link>
+
             </div>
           </CardHeader>
           <CardContent>
