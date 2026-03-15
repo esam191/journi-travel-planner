@@ -40,8 +40,7 @@ export default function DeleteTripDialog({ tripId }: { tripId: string }) {
         <Button
           variant="destructive"
           size="lg"
-          className="cursor-pointer"
-          font-medium
+          className="font-medium cursor-pointer"
         >
           <Trash2 className="mr-2 h-4 w-4" />
           Delete trip
