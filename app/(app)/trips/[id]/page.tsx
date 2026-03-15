@@ -20,8 +20,8 @@ import {
   getDurationInDays,
   getTripLocationLabel,
 } from "@/lib/utils";
-import { deleteTrip } from "@/lib/actions/trip-actions";
 import DeleteTripDialog from "@/components/DeleteTripDialog";
+import EditTripDialog from "@/components/EditTripDialog";
 
 type TripDetailsPageProps = {
   params: Promise<{ id: string }>;
@@ -95,7 +95,10 @@ export default async function TripDetailsPage({
               </div>
             </div>
           </div>
-          <DeleteTripDialog tripId={trip.id} />
+          <div className="flex items-center gap-2">
+            <EditTripDialog trip={trip} />
+            <DeleteTripDialog tripId={trip.id} />
+          </div>
         </div>
 
         <Card className="overflow-hidden py-0">
