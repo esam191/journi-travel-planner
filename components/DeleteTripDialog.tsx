@@ -37,9 +37,14 @@ export default function DeleteTripDialog({ tripId }: { tripId: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive">
+        <Button
+          variant="destructive"
+          size="lg"
+          className="cursor-pointer"
+          font-medium
+        >
           <Trash2 className="mr-2 h-4 w-4" />
-          Delete Trip
+          Delete trip
         </Button>
       </DialogTrigger>
       <DialogContent>
