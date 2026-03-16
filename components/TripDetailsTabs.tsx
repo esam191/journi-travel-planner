@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ItineraryTab from "./ItineraryTab";
 import DocumentsTab from "./DocumentsTab";
 import MapTab from "./MapTab";
@@ -41,7 +36,7 @@ export default function TripDetailsTabs({
       </TabsContent>
 
       <TabsContent value="documents">
-        <DocumentsTab documents={documents} />
+        <DocumentsTab documents={documents} tripId={tripId} />
       </TabsContent>
     </Tabs>
   );

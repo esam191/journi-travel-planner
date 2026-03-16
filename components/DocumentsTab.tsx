@@ -1,15 +1,15 @@
+"use client";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DocumentData } from "@/types/trip";
-import { Download, FileText, Trash2, Upload } from "lucide-react";
+import { Download, FileText, Trash2, Upload, Loader2 } from "lucide-react";
+import { saveDocument } from "@/lib/actions/document-actions";
+import { useRouter } from "next/navigation";
 
 type DocumentsTabProps = {
   documents: DocumentData[];
+  tripId: string;
 };
 
 function formatBytes(bytes?: number | null) {
@@ -19,15 +19,62 @@ function formatBytes(bytes?: number | null) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export default function DocumentsTab({ documents }: DocumentsTabProps) {
+export default function DocumentsTab({ documents, tripId }: DocumentsTabProps) {
+  const router = useRouter();
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed.");
+
+      const { url } = await res.json();
+      const storageKey = url.split(".com/")[1];
+
+      await saveDocument({
+        tripId,
+        url,
+        fileName: file.name,
+        fileSize: file.size,
+        mimeType: file.type,
+        storageKey,
+      });
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
   return (
     <Card className="overflow-hidden py-0">
       <CardHeader className="flex flex-row items-center justify-between border-b px-6 py-5">
         <CardTitle>Travel Documents</CardTitle>
 
-        <Button disabled>
-          <Upload className="mr-2 h-4 w-4" />
-          Upload Document
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          onChange={handleUpload}
+        />
+
+        <Button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+        >
+          {isUploading ? "Uploading..." : "Upload Document"}
         </Button>
       </CardHeader>
 
