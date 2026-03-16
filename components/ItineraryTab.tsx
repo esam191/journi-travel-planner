@@ -1,8 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import {
+  closestCenter,
+  DndContext,
+  PointerSensor,
+  type DragEndEvent,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import {
   Card,
   CardContent,
@@ -12,12 +23,13 @@ import {
 import {
   createItineraryItem,
   deleteItineraryItem,
+  reorderItineraryItems,
 } from "@/lib/actions/itinerary-actions";
 import { ItineraryItemData } from "@/types/trip";
-import { GripVertical, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import AddItemDialog from "./AddItemDialog";
 import ConfirmDeleteDialog from "./ConfirmDeleteDialog";
+import SortableItineraryItem from "./SortableItineraryItem";
 
 type ItineraryTabProps = {
   tripId: string;
@@ -26,8 +38,22 @@ type ItineraryTabProps = {
 
 export default function ItineraryTab({ tripId, items }: ItineraryTabProps) {
   const router = useRouter();
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  const [orderedItems, setOrderedItems] = useState(items);
   const [itemToDelete, setItemToDelete] = useState<ItineraryItemData | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [reorderLoading, setReorderLoading] = useState(false);
+
+  useEffect(() => {
+    setOrderedItems(items);
+  }, [items]);
 
   const handleAddItem = async (placeId: string) => {
     await createItineraryItem({
@@ -55,6 +81,40 @@ export default function ItineraryTab({ tripId, items }: ItineraryTabProps) {
     }
   };
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = orderedItems.findIndex((item) => item.id === active.id);
+    const newIndex = orderedItems.findIndex((item) => item.id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) {
+      return;
+    }
+
+    const previousItems = orderedItems;
+    const nextItems = arrayMove(orderedItems, oldIndex, newIndex);
+
+    setOrderedItems(nextItems);
+
+    try {
+      setReorderLoading(true);
+      await reorderItineraryItems({
+        tripId,
+        orderedItemIds: nextItems.map((item) => item.id),
+      });
+      router.refresh();
+    } catch {
+      setOrderedItems(previousItems);
+      alert("Failed to reorder itinerary items.");
+    } finally {
+      setReorderLoading(false);
+    }
+  };
+
   return (
     <>
       <Card className="overflow-hidden py-0">
@@ -64,37 +124,35 @@ export default function ItineraryTab({ tripId, items }: ItineraryTabProps) {
         </CardHeader>
 
         <CardContent className="space-y-4 p-6">
-          {items.length === 0 ? (
+          {orderedItems.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               No itinerary items yet.
             </p>
           ) : (
-            items.map((item, index) => (
-              <Card key={item.id}>
-                <CardContent className="flex items-start gap-4 p-5">
-                  <div className="pt-1 text-muted-foreground">
-                    <GripVertical className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0 flex-1 space-y-3">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <h3 className="text-lg font-semibold">{item.itemTitle}</h3>
-                      <Badge variant="secondary">Stop {index + 1}</Badge>
-                    </div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-destructive hover:text-destructive"
-                    aria-label={`Delete ${item.itemTitle}`}
-                    onClick={() => {
-                      handleDeleteItem(item);
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={(event) => {
+                void handleDragEnd(event);
+              }}
+            >
+              <SortableContext
+                items={orderedItems.map((item) => item.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-4">
+                  {orderedItems.map((item, index) => (
+                    <SortableItineraryItem
+                      key={item.id}
+                      item={item}
+                      index={index}
+                      onDelete={handleDeleteItem}
+                      disabled={deleteLoading || reorderLoading}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
           )}
         </CardContent>
       </Card>
