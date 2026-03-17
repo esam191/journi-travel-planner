@@ -1,10 +1,22 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
+import { signOut } from "@/lib/actions/auth-actions";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowRight, Calendar, MapPin, FileText } from "lucide-react";
 
 export default function Home() {
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/sign-in");
+    router.refresh();
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 items-center">
       {/* left side */}
@@ -26,14 +38,27 @@ export default function Home() {
               Get started for free <ArrowRight />
             </Link>
           </Button>
-          <Button
-            asChild
-            variant="outline"
-            size="lg"
-            className="px-8 h-12 rounded-lg text-md"
-          >
-            <Link href="/sign-in">Log in</Link>
-          </Button>
+          {session ? (
+            <Button
+              variant="outline"
+              size="lg"
+              className="px-8 h-12 rounded-lg text-md"
+              onClick={() => {
+                void handleSignOut();
+              }}
+            >
+              Log out
+            </Button>
+          ) : (
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="px-8 h-12 rounded-lg text-md"
+            >
+              <Link href="/sign-in">Log in</Link>
+            </Button>
+          )}
         </div>
       </div>
       {/* right side */}

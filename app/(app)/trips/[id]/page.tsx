@@ -12,7 +12,6 @@ import {
   FileText,
   MapPin,
   Route,
-  Trash2,
 } from "lucide-react";
 import TripDetailsTabs from "@/components/TripDetailsTabs";
 import {
@@ -20,7 +19,7 @@ import {
   getDurationInDays,
   getTripLocationLabel,
 } from "@/lib/utils";
-import DeleteTripDialog from "@/components/DeleteTripDialog";
+import DeleteTripButton from "@/components/DeleteTripButton";
 import EditTripDialog from "@/components/EditTripDialog";
 
 type TripDetailsPageProps = {
@@ -97,7 +96,7 @@ export default async function TripDetailsPage({
           </div>
           <div className="flex items-center gap-2">
             <EditTripDialog trip={trip} />
-            <DeleteTripDialog tripId={trip.id} />
+            <DeleteTripButton tripId={trip.id} tripTitle={trip.title} />
           </div>
         </div>
 

@@ -11,6 +11,11 @@ type CreateItineraryItemInput = {
   placeId: string;
 };
 
+type ReorderItineraryItemsInput = {
+  tripId: string;
+  orderedItemIds: string[];
+};
+
 const MAX_ORDER_RETRY_ATTEMPTS = 3;
 
 export async function createItineraryItem(input: CreateItineraryItemInput) {
@@ -117,5 +122,82 @@ export async function deleteItineraryItem(itemId: string) {
     where: {
       id: item.id,
     },
+  });
+}
+
+export async function reorderItineraryItems(input: ReorderItineraryItemsInput) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session || !session.user?.id) {
+    throw new Error("You must be signed in to reorder itinerary items.");
+  }
+
+  const { tripId, orderedItemIds } = input;
+
+  if (!tripId || orderedItemIds.length === 0) {
+    throw new Error("Missing itinerary reorder data.");
+  }
+
+  const uniqueOrderedItemIds = new Set(orderedItemIds);
+
+  if (uniqueOrderedItemIds.size !== orderedItemIds.length) {
+    throw new Error("Duplicate itinerary item IDs were provided.");
+  }
+
+  const trip = await prisma.trip.findFirst({
+    where: {
+      id: tripId,
+      userId: session.user.id,
+    },
+    select: {
+      id: true,
+      itineraryitems: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  if (!trip) {
+    throw new Error("Trip not found.");
+  }
+
+  if (trip.itineraryitems.length !== orderedItemIds.length) {
+    throw new Error("Invalid itinerary order provided.");
+  }
+
+  const tripItemIds = new Set(trip.itineraryitems.map((item) => item.id));
+
+  const hasInvalidItem = orderedItemIds.some((itemId) => !tripItemIds.has(itemId));
+
+  if (hasInvalidItem) {
+    throw new Error("Invalid itinerary order provided.");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    for (const [index, itemId] of orderedItemIds.entries()) {
+      await tx.itineraryItem.update({
+        where: {
+          id: itemId,
+        },
+        data: {
+          order: -(index + 1),
+        },
+      });
+    }
+
+    for (const [index, itemId] of orderedItemIds.entries()) {
+      await tx.itineraryItem.update({
+        where: {
+          id: itemId,
+        },
+        data: {
+          order: index,
+        },
+      });
+    }
   });
 }
