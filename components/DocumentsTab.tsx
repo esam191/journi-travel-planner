@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DocumentData } from "@/types/trip";
 import { Download, FileText, Trash2, Upload, Loader2 } from "lucide-react";
-import { saveDocument } from "@/lib/actions/document-actions";
+import { saveDocument, deleteDocument } from "@/lib/actions/document-actions";
 import { useRouter } from "next/navigation";
 
 type DocumentsTabProps = {
@@ -22,6 +22,7 @@ function formatBytes(bytes?: number | null) {
 export default function DocumentsTab({ documents, tripId }: DocumentsTabProps) {
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -58,6 +59,21 @@ export default function DocumentsTab({ documents, tripId }: DocumentsTabProps) {
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   }
+
+  async function handleDelete(docId: string) {
+    if (!confirm("Delete this document?")) return;
+    setIsDeleting(docId);
+    try {
+      await deleteDocument(docId);
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      alert("Could not delete document.");
+    } finally {
+      setIsDeleting(null);
+    }
+  }
+
   return (
     <Card className="overflow-hidden py-0">
       <CardHeader className="flex flex-row items-center justify-between border-b px-6 py-5">
@@ -110,7 +126,13 @@ export default function DocumentsTab({ documents, tripId }: DocumentsTabProps) {
                     </a>
                   </Button>
 
-                  <Button variant="ghost" size="icon" disabled>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDelete(doc.id)}
+                    disabled={isDeleting === doc.id}
+                    className="text-destructive hover:text-destructive"
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
