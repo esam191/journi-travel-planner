@@ -46,6 +46,7 @@ export async function saveDocument(data: {
         fileSize: Math.floor(data.fileSize),
         mimeType: data.mimeType || "application/octet-stream",
         storageKey,
+        uploadedBy: session.user.id,
       },
     });
   } catch (error: any) {
