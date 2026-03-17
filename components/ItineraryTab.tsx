@@ -17,6 +17,7 @@ import {
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -119,7 +120,12 @@ export default function ItineraryTab({ tripId, items }: ItineraryTabProps) {
     <>
       <Card className="overflow-hidden py-0">
         <CardHeader className="flex flex-row items-center justify-between border-b px-6 py-5">
-          <CardTitle>Itinerary</CardTitle>
+          <div className="space-y-1">
+            <CardTitle>Itinerary</CardTitle>
+            <CardDescription>
+              Review each stop in your trip and drag to reorder the plan.
+            </CardDescription>
+          </div>
           <AddItemDialog onSubmit={handleAddItem} />
         </CardHeader>
 
@@ -130,6 +136,7 @@ export default function ItineraryTab({ tripId, items }: ItineraryTabProps) {
             </p>
           ) : (
             <DndContext
+              id={`trip-itinerary-${tripId}`}
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={(event) => {

@@ -19,6 +19,15 @@ type SortableItineraryItemProps = {
   disabled?: boolean;
 };
 
+const stopBadgeStyles = [
+  "border-emerald-200 bg-emerald-100 text-emerald-800",
+  "border-sky-200 bg-sky-100 text-sky-800",
+  "border-amber-200 bg-amber-100 text-amber-800",
+  "border-rose-200 bg-rose-100 text-rose-800",
+  "border-violet-200 bg-violet-100 text-violet-800",
+  "border-cyan-200 bg-cyan-100 text-cyan-800",
+];
+
 export default function SortableItineraryItem({ item, index, onDelete, disabled = false }: SortableItineraryItemProps) {
   const {
     attributes,
@@ -36,6 +45,7 @@ export default function SortableItineraryItem({ item, index, onDelete, disabled 
     transform: CSS.Transform.toString(transform),
     transition,
   };
+  const stopBadgeClassName = stopBadgeStyles[index % stopBadgeStyles.length];
 
   return (
     <Card
@@ -60,7 +70,7 @@ export default function SortableItineraryItem({ item, index, onDelete, disabled 
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex flex-wrap items-center gap-3">
             <h3 className="text-lg font-semibold">{item.itemTitle}</h3>
-            <Badge variant="secondary">Stop {index + 1}</Badge>
+            <Badge className={stopBadgeClassName}>Stop {index + 1}</Badge>
           </div>
         </div>
         <Button
