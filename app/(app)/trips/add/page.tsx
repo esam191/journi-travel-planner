@@ -71,12 +71,12 @@ export default function AddTripPage() {
   };
 
   return (
-    <main className="min-h-screen bg-neutral-950 px-4 py-10 text-white">
-      <div className="mx-auto max-w-2xl">
-        <Card className="border-neutral-800 bg-neutral-900 text-white">
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-300 via-sky-200 to-white relative overflow-hidden font-[Inter]">
+      <div className="mx-auto max-w-6xl w-full px-4">
+        <Card className="w-full bg-white/40 backdrop-blur-xl border-white/40 shadow-xl">
           <CardHeader>
-            <CardTitle className="text-2xl">Add a new trip</CardTitle>
-            <CardDescription className="text-neutral-400">
+            <CardTitle className="text-lg text-black">Add a new trip</CardTitle>
+            <CardDescription className="text-black-400">
               Create the trip first, then add itinerary items and documents.
             </CardDescription>
           </CardHeader>

@@ -48,7 +48,7 @@ export default async function DashboardPage() {
   );
 
   return (
-    <main className="min-h-screen bg-background px-4 py-8 md:px-6">
+    <main className="min-h-screen bg-gradient-to-b from-sky-300 via-sky-200 to-white relative overflow-hidden font-[Inter] pt-16">
       <div className="mx-auto max-w-7xl space-y-8">
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
