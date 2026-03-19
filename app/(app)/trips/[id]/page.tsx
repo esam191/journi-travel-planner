@@ -5,7 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft,
   CalendarDays,
@@ -29,8 +29,9 @@ type TripDetailsPageProps = {
 export default async function TripDetailsPage({
   params,
 }: TripDetailsPageProps) {
+  const requestHeaders = await headers();
   const session = await auth.api.getSession({
-    headers: await headers(),
+    headers: requestHeaders,
   });
 
   if (!session?.user) {
@@ -64,107 +65,120 @@ export default async function TripDetailsPage({
 
   const durationDays = getDurationInDays(trip.startDate, trip.endDate);
   const mapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
+  const host = requestHeaders.get("host");
+  const protocol =
+    requestHeaders.get("x-forwarded-proto") ??
+    (process.env.NODE_ENV === "development" ? "http" : "https");
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL ??
+    (host ? `${protocol}://${host}` : "http://localhost:3000");
+
+  let fallbackImageUrl: string | null = null;
+
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/image?query=${encodeURIComponent(trip.title)}`,
+      { cache: "no-store" }
+    );
+
+    if (res.ok) {
+      const data = (await res.json()) as { imageUrl?: string };
+      fallbackImageUrl = data.imageUrl ?? null;
+    }
+  } catch {
+    fallbackImageUrl = null;
+  }
+
+  const heroImage = trip.imageUrl || fallbackImageUrl || "/placeholder.jpg";
 
   return (
-    <main className="min-h-screen bg-background px-4 py-8 md:px-6">
-      <div className="mx-auto max-w-7xl space-y-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div className="flex items-start gap-4">
-            <Button asChild variant="ghost" size="icon">
-              <Link href="/dashboard">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
+    <main className="app-shell pt-8">
+      <div className="app-frame space-y-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <Button asChild variant="ghost" className="w-fit">
+            <Link href="/dashboard">
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Link>
+          </Button>
 
-            <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tight">
-                {trip.title}
-              </h1>
-
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  <span>{getTripLocationLabel(trip.itineraryitems)}</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <CalendarDays className="h-4 w-4" />
-                  <span>{formatDateRange(trip.startDate, trip.endDate)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <EditTripDialog trip={trip} />
             <DeleteTripButton tripId={trip.id} tripTitle={trip.title} />
           </div>
         </div>
 
-        <Card className="overflow-hidden py-0">
-          <div className="relative aspect-[16/4] w-full bg-muted">
-            {trip.imageUrl ? (
-              <Image
-                src={trip.imageUrl}
-                alt={trip.title}
-                fill
-                className="object-cover"
-                sizes="100vw"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-                No image
+        <section className="hero-panel grid overflow-hidden lg:grid-cols-[1.3fr_0.9fr]">
+          <div className="relative min-h-[360px] border-b border-border/70 lg:border-r lg:border-b-0">
+            <Image
+              src={heroImage}
+              alt={trip.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 62vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[rgba(15,26,33,0.82)] via-[rgba(15,26,33,0.18)] to-transparent" />
+
+            <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
+              <div className="max-w-2xl space-y-4 text-white">
+                <h1 className="font-display text-4xl tracking-[-0.05em] md:text-6xl">
+                  {trip.title}
+                </h1>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline" className="bg-white/16 text-white backdrop-blur-md">
+                    <MapPin className="h-3.5 w-3.5" />
+                    {getTripLocationLabel(trip.itineraryitems)}
+                  </Badge>
+                  <Badge variant="outline" className="bg-white/16 text-white backdrop-blur-md">
+                    <CalendarDays className="h-3.5 w-3.5" />
+                    {formatDateRange(trip.startDate, trip.endDate)}
+                  </Badge>
+                </div>
               </div>
-            )}
+            </div>
           </div>
-        </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Trip Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">{trip.description}</p>
-          </CardContent>
-        </Card>
+          <div className="flex flex-col gap-6 p-6 md:p-8">
+            <div className="space-y-3">
+              <p className="atlas-kicker">Trip Summary</p>
+              <p className="section-copy max-w-none">{trip.description}</p>
+            </div>
 
-        <section className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium">Duration</CardTitle>
-              <CalendarDays className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-
-            <CardContent>
-              <div className="text-4xl font-bold">{durationDays}</div>
-              <p className="text-sm text-muted-foreground">Days</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium">Itinerary</CardTitle>
-              <Route className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-
-            <CardContent>
-              <div className="text-4xl font-bold">
-                {trip.itineraryitems.length}
+            <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+              <div className="rounded-[calc(var(--radius)*1.1)] border border-border/70 bg-background/72 p-4">
+                <div className="flex items-center justify-between">
+                  <p className="atlas-kicker">Duration</p>
+                  <CalendarDays className="h-4 w-4 text-primary" />
+                </div>
+                <div className="mt-3 font-display text-4xl tracking-[-0.05em]">
+                  {durationDays}
+                </div>
+                <p className="text-sm text-muted-foreground">days</p>
               </div>
-              <p className="text-sm text-muted-foreground">Items</p>
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium">Documents</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
+              <div className="rounded-[calc(var(--radius)*1.1)] border border-border/70 bg-background/72 p-4">
+                <div className="flex items-center justify-between">
+                  <p className="atlas-kicker">Itinerary</p>
+                  <Route className="h-4 w-4 text-primary" />
+                </div>
+                <div className="mt-3 font-display text-4xl tracking-[-0.05em]">
+                  {trip.itineraryitems.length}
+                </div>
+                <p className="text-sm text-muted-foreground">planned stops</p>
+              </div>
 
-            <CardContent>
-              <div className="text-4xl font-bold">{trip.documents.length}</div>
-              <p className="text-sm text-muted-foreground">Uploaded</p>
-            </CardContent>
-          </Card>
+              <div className="rounded-[calc(var(--radius)*1.1)] border border-border/70 bg-background/72 p-4">
+                <div className="flex items-center justify-between">
+                  <p className="atlas-kicker">Documents</p>
+                  <FileText className="h-4 w-4 text-primary" />
+                </div>
+                <div className="mt-3 font-display text-4xl tracking-[-0.05em]">
+                  {trip.documents.length}
+                </div>
+                <p className="text-sm text-muted-foreground">files stored</p>
+              </div>
+            </div>
+          </div>
         </section>
 
         <TripDetailsTabs

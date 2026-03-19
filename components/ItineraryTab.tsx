@@ -15,6 +15,9 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import {
+  Badge,
+} from "@/components/ui/badge";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -31,6 +34,7 @@ import { useRouter } from "next/navigation";
 import AddItemDialog from "./AddItemDialog";
 import ConfirmDeleteDialog from "./ConfirmDeleteDialog";
 import SortableItineraryItem from "./SortableItineraryItem";
+import { Compass } from "lucide-react";
 
 type ItineraryTabProps = {
   tripId: string;
@@ -119,8 +123,11 @@ export default function ItineraryTab({ tripId, items }: ItineraryTabProps) {
   return (
     <>
       <Card className="overflow-hidden py-0">
-        <CardHeader className="flex flex-row items-center justify-between border-b px-6 py-5">
-          <div className="space-y-1">
+        <CardHeader className="flex flex-col gap-4 border-b px-6 py-6 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary">{orderedItems.length} stops</Badge>
+            </div>
             <CardTitle>Itinerary</CardTitle>
             <CardDescription>
               Review each stop in your trip and drag to reorder the plan.
@@ -131,9 +138,20 @@ export default function ItineraryTab({ tripId, items }: ItineraryTabProps) {
 
         <CardContent className="space-y-4 p-6">
           {orderedItems.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No itinerary items yet.
-            </p>
+            <div className="flex flex-col items-center justify-center gap-4 rounded-[calc(var(--radius)*1.1)] border border-dashed border-border/80 bg-background/72 px-6 py-12 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border/70 bg-secondary text-primary">
+                <Compass className="h-6 w-6" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-display text-2xl tracking-[-0.03em]">
+                  No stops on the route yet
+                </h3>
+                <p className="mx-auto max-w-md text-sm text-muted-foreground">
+                  Add places to build the trip route, then drag them into the
+                  order you want to travel.
+                </p>
+              </div>
+            </div>
           ) : (
             <DndContext
               id={`trip-itinerary-${tripId}`}

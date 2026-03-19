@@ -27,7 +27,7 @@ export default function DatePickerField({ label, value, onChange, placeholder, t
             type="button"
             variant="outline"
             data-empty={!value}
-            className="w-full justify-start text-left font-normal data-[empty=true]:text-muted-foreground text-foreground"
+            className="h-11 w-full justify-start text-left font-normal text-foreground data-[empty=true]:text-muted-foreground"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {value ? format(value, "PPP") : <span>{placeholder}</span>}

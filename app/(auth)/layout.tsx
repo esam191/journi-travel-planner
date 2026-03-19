@@ -13,9 +13,5 @@ export default async function AuthLayout({
   if (session) {
     redirect("/dashboard");
   }
-  return (
-    <main className="min-h-screen dark">
-      {children}
-    </main>
-  );
+  return <main className="min-h-screen">{children}</main>;
 }

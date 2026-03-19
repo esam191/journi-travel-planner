@@ -5,7 +5,8 @@ import { authClient } from "@/lib/auth-client";
 import { signOut } from "@/lib/actions/auth-actions";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Calendar, MapPin, FileText } from "lucide-react";
+import { ArrowRight, Calendar, FileText, MapPin, Route } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export default function Home() {
   const router = useRouter();
@@ -18,90 +19,123 @@ export default function Home() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 items-center">
-      {/* left side */}
-      <div className="flex flex-col space-y-8 w-full max-w-lg">
-        <h1 className="text-7xl lg:text-6xl font-bold">
-          Plan your dream <br /> trip with ease
-        </h1>
-        <p className="text-xl text-slate-600 max-w-md">
-          Organize itineraries, manage travel documents, and discover amazing
-          destinations. It&apos;s the simplest way to plan your next trip.
-        </p>
-        <div className="flex gap-4 pt-4">
-          <Button
-            asChild
-            size="lg"
-            className="bg-black px-8 h-12 rounded-lg text-md"
-          >
-            <Link href="/sign-up">
-              Get started for free <ArrowRight />
-            </Link>
-          </Button>
-          {session ? (
-            <Button
-              variant="outline"
-              size="lg"
-              className="px-8 h-12 rounded-lg text-md"
-              onClick={() => {
-                void handleSignOut();
-              }}
-            >
-              Log out
+    <main className="app-shell pt-12">
+      <div className="app-frame grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+        <div className="flex max-w-2xl flex-col space-y-8">
+          <div className="space-y-4">
+            <Badge variant="secondary">Travel planner</Badge>
+            <h1 className="font-display text-6xl tracking-[-0.05em] text-balance lg:text-7xl">
+              Plan the whole trip like a polished travel folio.
+            </h1>
+            <p className="max-w-xl text-lg leading-relaxed text-muted-foreground">
+              Organize routes, keep your travel documents together, and move
+              from itinerary to map without losing the thread of the journey.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Button asChild size="lg">
+              <Link href="/sign-up">
+                Start planning
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </Button>
-          ) : (
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="px-8 h-12 rounded-lg text-md"
-            >
-              <Link href="/sign-in">Log in</Link>
-            </Button>
-          )}
+            {session ? (
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => {
+                  void handleSignOut();
+                }}
+              >
+                Log out
+              </Button>
+            ) : (
+              <Button asChild variant="outline" size="lg">
+                <Link href="/sign-in">Log in</Link>
+              </Button>
+            )}
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="surface-panel p-4">
+              <Route className="h-4 w-4 text-primary" />
+              <p className="mt-3 text-sm text-muted-foreground">
+                Build routes stop by stop.
+              </p>
+            </div>
+            <div className="surface-panel p-4">
+              <MapPin className="h-4 w-4 text-primary" />
+              <p className="mt-3 text-sm text-muted-foreground">
+                Keep each place grounded on the map.
+              </p>
+            </div>
+            <div className="surface-panel p-4">
+              <FileText className="h-4 w-4 text-primary" />
+              <p className="mt-3 text-sm text-muted-foreground">
+                Store documents beside the itinerary.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="hero-panel max-w-xl overflow-hidden justify-self-end">
+          <div className="border-b border-border/70 bg-[linear-gradient(160deg,rgba(35,79,92,0.95),rgba(18,34,42,0.95))] p-6 text-white">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="atlas-kicker text-white/65">Sample trip</p>
+                <h3 className="mt-3 font-display text-4xl tracking-[-0.04em]">
+                  Summer Europe
+                </h3>
+                <p className="mt-2 text-sm text-white/72">
+                  Paris • Rome • Barcelona
+                </p>
+              </div>
+              <Badge variant="outline" className="bg-white/16 text-white backdrop-blur-md">
+                6 stops
+              </Badge>
+            </div>
+          </div>
+
+          <div className="space-y-2 p-4 md:p-5">
+            <div className="flex items-start gap-4 rounded-[calc(var(--radius)*1.1)] border border-border/70 bg-background/72 p-4">
+              <Calendar className="mt-1 h-5 w-5 text-primary" />
+              <div>
+                <p className="font-display text-2xl tracking-[-0.03em]">
+                  Arrival in Paris
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Check-in at Hotel Lumiere • 2:00 PM
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 rounded-[calc(var(--radius)*1.1)] border border-border/70 bg-background/72 p-4">
+              <MapPin className="mt-1 h-5 w-5 text-primary" />
+              <div>
+                <p className="font-display text-2xl tracking-[-0.03em]">
+                  Louvre Museum Tour
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Main Entrance • 10:30 AM
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 rounded-[calc(var(--radius)*1.1)] border border-border/70 bg-background/72 p-4">
+              <FileText className="mt-1 h-5 w-5 text-primary" />
+              <div>
+                <p className="font-display text-2xl tracking-[-0.03em]">
+                  Flight to Rome
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Terminal 2E • 10:45 AM
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      {/* right side */}
-      <div className="w-full max-w-md border border-slate-200 rounded-xl shadow-sm">
-        <div className="bg-black p-6 text-white">
-          <div className="flex justify-between">
-            <h3 className="text-2xl font-bold">Summer Europe</h3>
-          </div>
-          <p className="text-slate-400 text-s">Paris • Rome • Barcelona</p>
-        </div>
-
-        <div className="p-4">
-          <div className="flex items-center gap-6 p-4">
-            <Calendar className="w-6 h-6 text-slate-400" />
-            <div>
-              <p className="text-s font-bold text-slate-900">
-                Arrival in Paris
-              </p>
-              <p className="text-xs text-slate-500">
-                Check-in at Hotel Lumière • 2:00 PM
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-6 p-4">
-            <MapPin className="w-6 h-6 text-slate-400" />
-            <div>
-              <p className="text-s font-bold text-slate-900">
-                Louvre Museum Tour
-              </p>
-              <p className="text-xs text-slate-500">Main Entrance • 10:30 AM</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-6 p-4">
-            <FileText className="w-6 h-6 text-slate-400" />
-            <div>
-              <p className="text-s font-bold text-slate-900">Flight to Rome</p>
-              <p className="text-xs text-slate-500">Terminal 2E • 10:45 AM</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </main>
   );
 }

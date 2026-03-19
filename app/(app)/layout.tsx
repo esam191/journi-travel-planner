@@ -17,9 +17,9 @@ export default async function AppLayout({
   }
 
   return (
-    <>
+    <div className="relative pb-12">
       <Navbar session={session} />
       {children}
-    </>
+    </div>
   );
 }

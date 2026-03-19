@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, MapPin } from "lucide-react";
+import { Plus, MapPin, Route } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -108,15 +108,16 @@ export default function AddItemDialog({ onSubmit }: AddItemDialogProps) {
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Add Item
+          Add Stop
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Add Itinerary Item</DialogTitle>
           <DialogDescription>
-            Search for a location and add it to this trip.
+            Search for a place, review the suggestion, and add it to the trip
+            route.
           </DialogDescription>
         </DialogHeader>
 
@@ -164,10 +165,16 @@ export default function AddItemDialog({ onSubmit }: AddItemDialogProps) {
           </div>
 
           {selectedSuggestion && (
-            <div className="rounded-lg border bg-muted/50 p-4">
+            <div className="rounded-[calc(var(--radius)*1.1)] border border-border/70 bg-background/72 p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <Route className="h-4 w-4 text-primary" />
+                <span className="atlas-kicker">Selected stop</span>
+              </div>
               <div className="flex items-center gap-2 font-medium">
-                <MapPin className="h-4 w-4" />
-                <span>{selectedSuggestion.mainText}</span>
+                <MapPin className="h-4 w-4 text-primary" />
+                <span className="font-display text-xl tracking-[-0.03em]">
+                  {selectedSuggestion.mainText}
+                </span>
               </div>
               {selectedSuggestion.secondaryText ? (
                 <p className="mt-1 text-sm text-muted-foreground">
@@ -188,7 +195,7 @@ export default function AddItemDialog({ onSubmit }: AddItemDialogProps) {
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={!selectedSuggestion || loading}>
-            {loading ? "Adding..." : "Add Item"}
+            {loading ? "Adding..." : "Add Stop"}
           </Button>
         </DialogFooter>
       </DialogContent>

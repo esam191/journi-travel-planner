@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+
 import prisma from "../prisma";
 
 export async function createTrip(formData: FormData) {
@@ -15,7 +16,6 @@ export async function createTrip(formData: FormData) {
 
   const title = formData.get("title")?.toString();
   const description = formData.get("description")?.toString();
-  const imageUrl = formData.get("imageUrl")?.toString();
   const startDateStr = formData.get("startDate")?.toString();
   const endDateStr = formData.get("endDate")?.toString();
 
@@ -30,7 +30,6 @@ export async function createTrip(formData: FormData) {
     data: {
       title,
       description,
-      imageUrl,
       startDate,
       endDate,
       userId: session.user.id,
@@ -83,7 +82,6 @@ export async function updateTrip(tripId: string, formData: FormData) {
 
   const title = formData.get("title")?.toString();
   const description = formData.get("description")?.toString();
-  const imageUrl = formData.get("imageUrl")?.toString();
   const startDateStr = formData.get("startDate")?.toString();
   const endDateStr = formData.get("endDate")?.toString();
 
@@ -115,7 +113,6 @@ export async function updateTrip(tripId: string, formData: FormData) {
     data: {
       title,
       description,
-      imageUrl,
       startDate,
       endDate,
     },
