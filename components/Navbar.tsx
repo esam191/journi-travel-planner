@@ -22,50 +22,56 @@ export default function Navbar({ session }: { session: Session | null }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link
-          href={session && isAppPage ? "/dashboard" : "/"}
-          className="flex items-center gap-3"
-        >
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Plane className="h-5 w-5" />
-          </div>
-          <span className="text-xl font-bold tracking-tight">Journi</span>
-        </Link>
+    <header className="sticky top-0 z-50 px-4 pt-4 md:px-6">
+      <div className="app-frame">
+        <div className="surface-panel flex min-h-18 items-center justify-between gap-4 px-4 py-3 sm:px-5">
+          <Link
+            href={session && isAppPage ? "/dashboard" : "/"}
+            className="flex items-center gap-3"
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-primary/25 bg-primary/12 text-primary shadow-[0_12px_30px_-20px_rgba(36,84,96,0.55)]">
+              <Plane className="h-5 w-5" />
+            </div>
+            <div className="space-y-0.5">
+              <span className="font-display text-2xl leading-none tracking-[-0.04em]">
+                Journi
+              </span>
+            </div>
+          </Link>
 
-        <nav className="flex items-center gap-3">
-          {session ? (
-            <>
-              {isDashboardPage ? (
-                <Button asChild>
-                  <Link href="/trips/add" className="inline-flex items-center gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add Trip
-                  </Link>
+          <nav className="flex items-center gap-2">
+            {session ? (
+              <>
+                {isDashboardPage ? (
+                  <Button asChild>
+                    <Link href="/trips/add" className="inline-flex items-center gap-2">
+                      <Plus className="h-4 w-4" />
+                      Add Trip
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button asChild>
+                    <Link href="/dashboard">Go to trips</Link>
+                  </Button>
+                )}
+
+                <Button variant="ghost" onClick={handleSignOut}>
+                  Sign out
                 </Button>
-              ) : (
-                <Button asChild>
-                  <Link href="/dashboard">Go to trips</Link>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link href="/sign-in">Log In</Link>
                 </Button>
-              )}
 
-              <Button variant="ghost" onClick={handleSignOut}>
-                Sign out
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button variant="ghost" asChild>
-                <Link href="/sign-in">Log In</Link>
-              </Button>
-
-              <Button asChild>
-                <Link href="/sign-up">Sign Up</Link>
-              </Button>
-            </>
-          )}
-        </nav>
+                <Button asChild>
+                  <Link href="/sign-up">Sign Up</Link>
+                </Button>
+              </>
+            )}
+          </nav>
+        </div>
       </div>
     </header>
   );

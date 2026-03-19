@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  ArrowRight,
   Calendar,
   CheckCircle2,
   Plane,
@@ -48,66 +49,80 @@ export default async function DashboardPage() {
   );
 
   return (
-    <main className="min-h-screen bg-background px-4 py-8 md:px-6">
-      <div className="mx-auto max-w-7xl space-y-8">
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
-              <Sparkles className="h-6 w-6 text-muted-foreground" />
+    <main className="app-shell pt-8">
+      <div className="app-frame space-y-8">
+        <section className="hero-panel px-6 py-7 md:px-8 md:py-9">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl space-y-4">
+              <div className="flex items-start gap-4">
+                <div className="mt-1 flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/12 text-primary">
+                  <Sparkles className="h-6 w-6" />
+                </div>
+                <div className="space-y-3">
+                  <h1 className="page-title text-balance">
+                    Welcome back, {session.user.name || "Traveler"}.
+                  </h1>
+                  <p className="section-copy">
+                    Review what is booked, what is upcoming, and what still
+                    needs attention before your next departure.
+                  </p>
+                </div>
+              </div>
             </div>
+          </div>
 
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                Welcome back, {session.user.name || "Traveler"}!
-              </h1>
-              <p className="text-muted-foreground">
-                Ready to plan your next adventure?
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            <Card size="sm" className="bg-background/72 py-0">
+              <CardHeader className="flex flex-row items-start justify-between border-b pb-4">
+                <div>
+                  <p className="atlas-kicker">Total Trips</p>
+                  <CardTitle className="mt-2 text-base">Journeys logged</CardTitle>
+                </div>
+                <Plane className="h-4 w-4 text-primary" />
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="font-display text-4xl tracking-[-0.04em]">
+                  {totalTrips}
+                </div>
+                <CardDescription>All planned departures</CardDescription>
+              </CardContent>
+            </Card>
 
-        <section className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium">
-                Total Trips
-              </CardTitle>
-              <Plane className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold">{totalTrips}</div>
-              <CardDescription>All planned journeys</CardDescription>
-            </CardContent>
-          </Card>
+            <Card size="sm" className="bg-background/72 py-0">
+              <CardHeader className="flex flex-row items-start justify-between border-b pb-4">
+                <div>
+                  <p className="atlas-kicker">Upcoming</p>
+                  <CardTitle className="mt-2 text-base">Trips ahead</CardTitle>
+                </div>
+                <Calendar className="h-4 w-4 text-primary" />
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="font-display text-4xl tracking-[-0.04em]">
+                  {totalUpcoming}
+                </div>
+                <CardDescription>Adventures on the horizon</CardDescription>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium">Upcoming</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold">{totalUpcoming}</div>
-              <CardDescription>Adventures ahead</CardDescription>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium">
-                Activities
-              </CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-
-            <CardContent>
-              <div className="text-4xl font-bold">{totalActivities}</div>
-              <CardDescription>Planned activities</CardDescription>
-            </CardContent>
-          </Card>
+            <Card size="sm" className="bg-background/72 py-0">
+              <CardHeader className="flex flex-row items-start justify-between border-b pb-4">
+                <div>
+                  <p className="atlas-kicker">Itinerary</p>
+                  <CardTitle className="mt-2 text-base">Stops mapped</CardTitle>
+                </div>
+                <CheckCircle2 className="h-4 w-4 text-primary" />
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="font-display text-4xl tracking-[-0.04em]">
+                  {totalActivities}
+                </div>
+                <CardDescription>Planned places and activities</CardDescription>
+              </CardContent>
+            </Card>
+          </div>
         </section>
 
-        <TripsList trips={trips}/>
+        <TripsList trips={trips} />
       </div>
     </main>
   );

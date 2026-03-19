@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Plane } from "lucide-react";
+import { Compass, Plane, Route } from "lucide-react";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -52,27 +52,26 @@ export default function SignInPage() {
   }
 
   return (
+    <div className="app-shell flex items-center py-10">
 
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-300 via-sky-200 to-white relative overflow-hidden font-[Inter]">
-
-      <div className="cloud cloud1"></div>
-      <div className="cloud cloud2"></div>
-      <div className="cloud cloud3"></div>
-
-      <Card className="w-full max-w-sm bg-white/40 backdrop-blur-xl border-white/40 shadow-xl">
-        <CardHeader>
+      <Card className="mx-auto w-full max-w-md py-0">
+        <CardHeader className="border-b">
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg text-black">Log in and get tripping!</CardTitle>
+            <div className="space-y-2">
+              <p className="atlas-kicker">Sign in</p>
+              <CardTitle>Log in and get tripping.</CardTitle>
             </div>
-            <Plane className="w-10 h-10 text-black" />
+
+            <Link href="/">
+              <Plane className="h-8 w-8 text-primary transition hover:scale-110" />
+            </Link>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           {error && <p className="text-red-500">{error}</p>}
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
-              <div className="grid gap-2 text-black">
+              <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
@@ -84,7 +83,7 @@ export default function SignInPage() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              <div className="grid gap-2 text-black">
+              <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                 </div>
@@ -103,8 +102,8 @@ export default function SignInPage() {
             </div>
           </form>
         </CardContent>
-        <CardFooter className="flex-col gap-2 text-black">
-          <div className="relative flex justify-center text-[11px] text-black">
+        <CardFooter className="flex-col gap-2 border-t px-6 py-6">
+          <div className="relative flex justify-center text-[11px] tracking-[0.2em] text-muted-foreground">
             OR LOG IN WITH
           </div>
           <Button
@@ -152,11 +151,11 @@ export default function SignInPage() {
             </svg>
             Github
           </Button>
-          <Button variant="link" className="w-full text-black">
+          <Button variant="link" className="w-full">
             <Link href="/sign-up">Sign up for an account</Link>
           </Button>
         </CardFooter>
       </Card>
-    </div >
+    </div>
   );
 }

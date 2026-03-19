@@ -15,10 +15,19 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import DatePickerField from "@/components/ui/date-picker";
 
-export default function EditTripDialog({ trip }: { trip: any }) {
+type EditableTrip = {
+  id: string;
+  title: string;
+  description: string;
+  startDate: Date;
+  endDate: Date;
+};
+
+export default function EditTripDialog({ trip }: { trip: EditableTrip }) {
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
@@ -93,19 +102,20 @@ export default function EditTripDialog({ trip }: { trip: any }) {
         <Button
           variant="secondary"
           size="lg"
-          className="bg-teal-100 text-teal-600 hover:bg-teal-200 cursor-pointer font-medium"
+          className="cursor-pointer"
         >
           <Pencil className="mr-2 h-4 w-4" />
           Edit Details
         </Button>
       </DialogTrigger>
       <DialogContent
+        className="sm:max-w-2xl"
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">Edit Trip</DialogTitle>{" "}
+            <DialogTitle>Edit Trip</DialogTitle>
             <DialogDescription>
               Update details about your trip below.
             </DialogDescription>
@@ -122,20 +132,20 @@ export default function EditTripDialog({ trip }: { trip: any }) {
           )}
 
           <div className="grid gap-6 py-4">
-            <div>
-              <label className="text-base font-medium">Title</label>
+            <div className="space-y-2">
+              <Label htmlFor="edit-title">Title</Label>
               <Input name="title" defaultValue={trip.title} required />
             </div>
 
             <div className="space-y-2">
-              <label className="text-base font-medium">Description</label>
+              <Label htmlFor="edit-description">Description</Label>
               <Textarea
                 name="description"
                 defaultValue={trip.description}
                 required
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 md:grid-cols-2">
               <DatePickerField
                 label="Start date"
                 value={startDate}
@@ -155,7 +165,7 @@ export default function EditTripDialog({ trip }: { trip: any }) {
           <DialogFooter>
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               onClick={() => setOpen(false)}
             >
               Cancel

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Plane } from "lucide-react";
+import { Compass, Plane, Route } from "lucide-react";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -53,25 +53,55 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-300 via-sky-200 to-white relative overflow-hidden font-[Inter]">  
+    <div className="app-shell flex items-center py-10">
+      <div className="app-frame grid w-full gap-6 lg:grid-cols-[0.95fr_0.8fr]">
+        <Card className="justify-between bg-[linear-gradient(160deg,rgba(35,79,92,0.95),rgba(18,34,42,0.95))] py-0 text-white ring-white/10">
+          <CardContent className="flex h-full flex-col justify-between gap-10 p-8 md:p-10">
+            <div className="space-y-4">
+              <p className="atlas-kicker text-white/65">Create your account</p>
+              <h1 className="font-display text-5xl tracking-[-0.05em] text-balance">
+                Start planning with a calmer travel workspace.
+              </h1>
+              <p className="max-w-md text-sm leading-relaxed text-white/72">
+                Build trips, organize route stops, and keep all supporting
+                documents close at hand from the beginning.
+              </p>
+            </div>
 
-      <div className="cloud cloud1"></div>
-      <div className="cloud cloud2"></div>
-      <div className="cloud cloud3"></div>
-      
-        <Card className="w-full max-w-sm bg-white/40 backdrop-blur-xl border-white/40 shadow-xl">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-lg text-black">Sign up and get tripping!</CardTitle>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-[calc(var(--radius)*1.1)] border border-white/10 bg-white/6 p-4">
+                <Route className="h-4 w-4 text-[color:var(--accent)]" />
+                <p className="mt-3 text-sm text-white/72">
+                  Shape each journey into a clear route.
+                </p>
               </div>
-              <Plane className="w-10 h-10 text-black" />
+              <div className="rounded-[calc(var(--radius)*1.1)] border border-white/10 bg-white/6 p-4">
+                <Compass className="h-4 w-4 text-[color:var(--accent)]" />
+                <p className="mt-3 text-sm text-white/72">
+                  Keep plans, files, and destinations organized.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="mx-auto w-full max-w-md py-0">
+          <CardHeader className="border-b">
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <p className="atlas-kicker">Create account</p>
+                <CardTitle>Sign up and get tripping.</CardTitle>
+              </div>
+
+              <Link href="/">
+                <Plane className="h-8 w-8 text-primary transition hover:scale-110" />
+              </Link>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             {error && <p className="text-red-500">{error}</p>}
             <form onSubmit={handleSubmit}>
-              <div className="flex flex-col gap-6 text-black">
+              <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="email">Name</Label>
                   <Input
@@ -84,7 +114,7 @@ export default function SignUpPage() {
                     onChange={(e) => setName(e.target.value)}
                   />
                 </div>
-                <div className="grid gap-2 text-black">
+                <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
@@ -96,7 +126,7 @@ export default function SignUpPage() {
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
-                <div className="grid gap-2 text-black">
+                <div className="grid gap-2">
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
                   </div>
@@ -115,8 +145,8 @@ export default function SignUpPage() {
               </div>
             </form>
           </CardContent>
-          <CardFooter className="flex-col gap-2 text-black">
-            <div className="relative flex justify-center text-[11px]">
+          <CardFooter className="flex-col gap-2 border-t px-6 py-6">
+            <div className="relative flex justify-center text-[11px] tracking-[0.2em] text-muted-foreground">
               OR SIGN UP WITH
             </div>
             <Button
@@ -164,11 +194,12 @@ export default function SignUpPage() {
               </svg>
               Github
             </Button>
-            <Button variant="link" className="w-full text-black">
+            <Button variant="link" className="w-full">
               <Link href="/sign-in">Log in to an existing account</Link>
             </Button>
           </CardFooter>
         </Card>
+      </div>
     </div >
   );
 }
