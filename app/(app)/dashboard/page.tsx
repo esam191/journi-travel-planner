@@ -107,7 +107,7 @@ export default async function DashboardPage() {
           </Card>
         </section>
 
-        <TripsList trips={trips} />
+        <TripsList trips={trips}/>
       </div>
     </main>
   );

@@ -65,6 +65,14 @@ export default async function TripDetailsPage({
   const durationDays = getDurationInDays(trip.startDate, trip.endDate);
   const mapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
 
+  const res = await fetch(
+  `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/image?query=${encodeURIComponent(trip.title)}`,
+  { cache: "no-store" } 
+  );
+
+  const data = await res.json();
+  const imageUrl = data.imageUrl;
+
   return (
     <main className="min-h-screen bg-background px-4 py-8 md:px-6">
       <div className="mx-auto max-w-7xl space-y-8">
@@ -102,19 +110,14 @@ export default async function TripDetailsPage({
 
         <Card className="overflow-hidden py-0">
           <div className="relative aspect-[16/4] w-full bg-muted">
-            {trip.imageUrl ? (
-              <Image
-                src={trip.imageUrl}
-                alt={trip.title}
-                fill
-                className="object-cover"
-                sizes="100vw"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-                No image
-              </div>
-            )}
+            <Image
+              src={imageUrl || "/placeholder.jpg"}
+              alt={trip.title}
+              fill
+              className="object-cover"
+              sizes="100vw"
+            />
+            )
           </div>
         </Card>
 
