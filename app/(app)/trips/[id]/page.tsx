@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import AiItinerarySection from "@/components/AIItinerarySection";
 import {
   ArrowLeft,
   CalendarDays,
@@ -89,7 +90,7 @@ export default async function TripDetailsPage({
     fallbackImageUrl = null;
   }
 
-  const heroImage = trip.imageUrl || fallbackImageUrl || "/placeholder.jpg";
+  const heroImage = fallbackImageUrl || "/placeholder.jpg";
 
   return (
     <main className="app-shell pt-8">
@@ -187,7 +188,9 @@ export default async function TripDetailsPage({
           itineraryitems={trip.itineraryitems}
           documents={trip.documents}
         />
+        <AiItinerarySection trip={trip} days={durationDays} />
       </div>
+      
     </main>
   );
 }
