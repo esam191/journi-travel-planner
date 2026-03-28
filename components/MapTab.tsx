@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ItineraryItemData } from "@/types/trip";
-import { Compass, Route } from "lucide-react";
+import { Compass } from "lucide-react";
 
 type MapTabProps = {
   apiKey: string;

@@ -5,15 +5,11 @@ import { Calendar, MapPin, Route } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDateRange, getTripLocationLabel } from "@/lib/utils";
-import { Badge } from "./ui/badge";
 import { useEffect, useState } from "react";
-
 
 type TripCardProps = {
   trip: TripWithItineraryItems;
-}
-
-
+};
 
 export default function TripCard({ trip }: TripCardProps) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -39,7 +35,6 @@ export default function TripCard({ trip }: TripCardProps) {
             sizes="(max-width: 1024px) 100vw, 33vw"
             className="object-cover transition-opacity duration-500 hover:scale-105"
           />
-          )
         </div>
 
         <CardContent className="space-y-5 p-6">
