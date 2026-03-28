@@ -66,14 +66,16 @@ export default async function TripDetailsPage({
 
   const durationDays = getDurationInDays(trip.startDate, trip.endDate);
   const mapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
-  const host = requestHeaders.get("host");
+  const host =
+    requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
   const protocol =
     requestHeaders.get("x-forwarded-proto") ??
     (process.env.NODE_ENV === "development" ? "http" : "https");
+  const fallbackBaseUrl =
+    process.env.BETTER_AUTH_URL?.trim().replace(/\/$/, "") ??
+    "http://localhost:3000";
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL ??
-    (host ? `${protocol}://${host}` : "http://localhost:3000");
-
+    host ? `${protocol}://${host}` : fallbackBaseUrl;
   let fallbackImageUrl: string | null = null;
 
   try {
