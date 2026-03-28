@@ -28,8 +28,6 @@ export default function AddTripPage() {
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [timeZone, setTimeZone] = useState<string | undefined>(undefined);
-  const [selectedImageName, setSelectedImageName] = useState("");
-
   useEffect(() => {
     setTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone);
   }, []);
@@ -154,33 +152,6 @@ export default function AddTripPage() {
                     rows={5}
                     required
                   />
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="image">Image</Label>
-                  <Input
-                    id="image"
-                    name="image"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      setSelectedImageName(file?.name ?? "");
-                    }}
-                  />
-                  <div className="flex items-center gap-3">
-                    <Button asChild type="button" variant="outline">
-                      <label htmlFor="image" className="cursor-pointer">
-                        Upload image
-                      </label>
-                    </Button>
-                    {selectedImageName ? (
-                      <span className="text-sm text-muted-foreground">{selectedImageName}</span>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">No file selected</span>
-                    )}
-                  </div>
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2">
