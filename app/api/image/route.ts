@@ -25,8 +25,8 @@ export async function GET(req: Request) {
       "https://images.unsplash.com/photo-1507525428034-b723cf961d3e";
 
     return NextResponse.json({ imageUrl });
-  } 
-  catch (error) {
+  }
+  catch {
     return NextResponse.json(
       { imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e" },
       { status: 200 }

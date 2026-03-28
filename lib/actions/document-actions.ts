@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@/lib/generated/prisma/client";
 import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
@@ -49,8 +50,12 @@ export async function saveDocument(data: {
         uploadedBy: session.user.id,
       },
     });
-  } catch (error: any) {
-    if (error.code === 'P2002') {
+  } catch (error) {
+    const isDuplicateDocument =
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002";
+
+    if (isDuplicateDocument) {
       throw new Error("This file already exists in your storage.");
     }
     throw new Error("Failed to save document to the database.");
@@ -58,44 +63,44 @@ export async function saveDocument(data: {
 }
 
 export async function deleteDocument(documentId: string) {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-  
-    if (!session || !session.user?.id) {
-      throw new Error("Unauthorized");
-    }
-  
-    const document = await prisma.document.findFirst({
-      where: {
-        id: documentId,
-        trip: {
-          userId: session.user.id,
-        },
-      },
-    });
-  
-    if (!document) {
-      throw new Error("Document not found.");
-    }
-  
-    try {
-      const { DeleteObjectCommand } = await import("@aws-sdk/client-s3");
-      const { s3Client } = await import("@/lib/spaces");
-  
-      await s3Client.send(
-        new DeleteObjectCommand({
-          Bucket: process.env.SPACES_BUCKET,
-          Key: document.storageKey, 
-        })
-      );
-  
-      await prisma.document.delete({
-        where: { id: documentId },
-      });
-  
-      return { success: true };
-    } catch (error) {
-      throw new Error("Failed to delete document.");
-    }
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session || !session.user?.id) {
+    throw new Error("Unauthorized");
   }
+
+  const document = await prisma.document.findFirst({
+    where: {
+      id: documentId,
+      trip: {
+        userId: session.user.id,
+      },
+    },
+  });
+
+  if (!document) {
+    throw new Error("Document not found.");
+  }
+
+  try {
+    const { DeleteObjectCommand } = await import("@aws-sdk/client-s3");
+    const { s3Client } = await import("@/lib/spaces");
+
+    await s3Client.send(
+      new DeleteObjectCommand({
+        Bucket: process.env.SPACES_BUCKET,
+        Key: document.storageKey,
+      })
+    );
+
+    await prisma.document.delete({
+      where: { id: documentId },
+    });
+
+    return { success: true };
+  } catch {
+    throw new Error("Failed to delete document.");
+  }
+}

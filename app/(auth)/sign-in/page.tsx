@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Compass, Plane, Route } from "lucide-react";
+import { Plane } from "lucide-react";
 
 export default function SignInPage() {
   const router = useRouter();
