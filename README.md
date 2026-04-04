@@ -203,7 +203,7 @@ You can also click the Generate with AI button in the AI Planner section to crea
 
 npm install
 
-2. Create a local environment file such as `.env`.  
+2. Copy `.env.example` to `.env`.  
 3. Configure the required environment variables:  
      
 * `BETTER_AUTH_SECRET`: secret used by Better Auth for signing sessions.  
@@ -243,6 +243,14 @@ Required configuration:
 * `SPACES_REGION`: for example `tor1`  
 * `SPACES_BUCKET`: public bucket used to store uploaded files  
 * `SPACES_KEY` and `SPACES_SECRET`: access credentials for the bucket
+
+### API Endpoints
+
+* `GET, POST /api/auth/[...all]`: Better Auth endpoint used for sign-in, sign-up, session, sign-out, and provider auth flows.
+* `GET /api/image?query=<search text>`: fetches a trip cover image from Unsplash and returns `{ imageUrl }`. Returns `400` if `query` is missing.
+* `POST /api/upload`: accepts `multipart/form-data` with a `file` field, uploads the file to DigitalOcean Spaces, and returns `{ url }`. Returns `400` for invalid content type or missing file.
+* `GET /api/places/autocomplete?input=<search text>`: authenticated endpoint that uses Google Places autocomplete and returns `{ suggestions }`. Returns `401` if the user is not signed in.
+* `POST /api/itineraryGenerator`: accepts JSON with `tripTitle`, `description`, `days`, and `country`, then returns a generated itinerary JSON object. Returns `400` if required fields are missing.
 
 ### Local Development and Testing
 
